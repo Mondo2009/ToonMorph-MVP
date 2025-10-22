@@ -1,0 +1,2 @@
+
+ //pipeline/scripts/readfile.js const fs = require ('fs'); function readscript (filepath) { const text = fs.readfileSync (filepath, 'utf-8'); return text split("/n"); // split into lines/dialogues}  console.log(readScript("sample txt"));
