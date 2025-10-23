@@ -204,7 +204,7 @@
                     <option value="wide">Wide</option>
                 </select>
                 <label>Face Size</label>
-                <input id="c_faceSize" type="range" min="0.5" max="1.35" step="0.1" value="1">
+                <input id="c_faceSize" type="range" min="0.5" max="1.3" step="0.1" value="1">
                 <small>Adjust the overall face scale</small>
 
                 <button id="c_make" class="primary" style="margin-top:8px">Generate Character</button>
@@ -464,33 +464,49 @@ function drawCharacterSheet() {
         H = c.cvs.height;
     ctx.clearRect(0, 0, W, H);
 
-    const faceScale = parseFloat(c.faceSize.value || 1); // ✅ get scale
-    const centerX = W / 2,
-        centerY = H * 0.68;
+    const scale = parseFloat(c.faceSize.value || 1); // ✅ use for full-body scale
+    const centerX = W / 2;
+    const baseCenterY = H * 0.68;
 
-    // Torso
+    // Adjust vertical position slightly when scaling up or down
+    const centerY = baseCenterY + (1 - scale) * 100;
+
+    // 🧍‍♂️ Body (Torso)
     ctx.fillStyle = c.shirt.value;
-    ctx.fillRect(centerX - 55, centerY - 10, 110, 110);
+    const torsoW = 110 * scale;
+    const torsoH = 110 * scale;
+    ctx.fillRect(centerX - torsoW / 2, centerY - 10 * scale, torsoW, torsoH);
 
-    // Head
-    const headSize = 120 * faceScale;
-    drawHead(ctx, centerX - headSize / 2, centerY - 160 * faceScale, headSize, headSize, c.head.value, c.skin.value);
+    // 🟤 Head
+    const headSize = 120 * scale;
+    drawHead(
+        ctx,
+        centerX - headSize / 2,
+        centerY - 160 * scale,
+        headSize,
+        headSize,
+        c.head.value,
+        c.skin.value
+    );
 
-    // Eyes & mouth (default closed)
-    drawEyes(ctx, centerX, centerY - 112 * faceScale, c.eyes.value, faceScale);
-    drawMouth(ctx, centerX, centerY - 86 * faceScale, c.mouth.value, 0, faceScale);
+    // Eyes + Mouth (scaled with body)
+    drawEyes(ctx, centerX, centerY - 112 * scale, c.eyes.value, scale);
+    drawMouth(ctx, centerX, centerY - 86 * scale, c.mouth.value, 0, scale);
 
-    // Mouth row frames
+    // Mouth row frames (top small preview)
     for (let f = 0; f < 4; f++) {
         const x = 64 + f * 96,
             y = 70;
-        drawHead(ctx, x - 26 * faceScale, y - 26 * faceScale, 52 * faceScale, 52 * faceScale, 'circle', c.skin.value);
-        drawEyes(ctx, x, y - 6 * faceScale, 'dot', faceScale);
-        drawMouth(ctx, x, y + 2 * faceScale, c.mouth.value, f, faceScale);
+        const headW = 52 * scale,
+            headH = 52 * scale;
+        drawHead(ctx, x - headW / 2, y - headH / 2, headW, headH, 'circle', c.skin.value);
+        drawEyes(ctx, x, y - 6 * scale, 'dot', scale);
+        drawMouth(ctx, x, y + 2 * scale, c.mouth.value, f, scale);
         ctx.strokeStyle = '#22324a';
         ctx.strokeRect(x - 40, y - 40, 80, 80);
     }
 }
+
 
 document.getElementById('c_make').onclick = drawCharacterSheet;
 
