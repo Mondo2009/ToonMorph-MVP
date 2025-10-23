@@ -203,6 +203,10 @@
                     <option value="bean">Beans</option>
                     <option value="wide">Wide</option>
                 </select>
+                <label>Face Size</label>
+                <input id="c_faceSize" type="range" min="0.5" max="1.35" step="0.1" value="1">
+                <small>Adjust the overall face scale</small>
+
                 <button id="c_make" class="primary" style="margin-top:8px">Generate Character</button>
                 <button id="c_save" style="margin-top:6px">Save to Library</button>
                 <button id="c_png" style="margin-top:6px">Download PNG Sprite</button>
@@ -334,94 +338,178 @@
         });
 
         /* =========================================================
-           Character generator
-        ========================================================= */
-        const c = {
-            cvs: document.getElementById('charCanvas'),
-            ctx: document.getElementById('charCanvas').getContext('2d'),
-            name: document.getElementById('c_name'),
-            head: document.getElementById('c_head'),
-            skin: document.getElementById('c_skin'),
-            shirt: document.getElementById('c_shirt'),
-            mouth: document.getElementById('c_mouth'),
-            eyes: document.getElementById('c_eyes')
-        };
-        function drawHead(ctx, x, y, w, h, shape, color) {
-            ctx.fillStyle = color;
+   Character generator
+========================================================= */
+const c = {
+    cvs: document.getElementById('charCanvas'),
+    ctx: document.getElementById('charCanvas').getContext('2d'),
+    name: document.getElementById('c_name'),
+    head: document.getElementById('c_head'),
+    skin: document.getElementById('c_skin'),
+    shirt: document.getElementById('c_shirt'),
+    mouth: document.getElementById('c_mouth'),
+    eyes: document.getElementById('c_eyes'),
+    faceSize: document.getElementById('c_faceSize') // ✅ new slider reference
+};
+
+function drawHead(ctx, x, y, w, h, shape, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    if (shape === 'circle') {
+        ctx.arc(x + w / 2, y + h / 2, Math.min(w, h) / 2, 0, Math.PI * 2);
+    } else if (shape === 'oval') {
+        ctx.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2);
+    } else {
+        ctx.roundRect(x, y, w, h, 10);
+    }
+    ctx.fill();
+}
+
+function drawEyes(ctx, x, y, type, scale = 1) {
+    ctx.fillStyle = '#111';
+    if (type === 'dot') {
+        ctx.beginPath();
+        ctx.arc(x - 18 * scale, y, 4 * scale, 0, 6.28);
+        ctx.arc(x + 18 * scale, y, 4 * scale, 0, 6.28);
+        ctx.fill();
+    }
+    if (type === 'bean') {
+        ctx.fillRect(x - 24 * scale, y - 5 * scale, 12 * scale, 10 * scale);
+        ctx.fillRect(x + 12 * scale, y - 5 * scale, 12 * scale, 10 * scale);
+    }
+    if (type === 'wide') {
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.ellipse(x - 18 * scale, y, 12 * scale, 9 * scale, 0, 0, 6.28);
+        ctx.ellipse(x + 18 * scale, y, 12 * scale, 9 * scale, 0, 0, 6.28);
+        ctx.fill();
+        ctx.fillStyle = '#111';
+        ctx.beginPath();
+        ctx.arc(x - 18 * scale, y, 4 * scale, 0, 6.28);
+        ctx.arc(x + 18 * scale, y, 4 * scale, 0, 6.28);
+        ctx.fill();
+    }
+}
+
+function drawMouth(ctx, x, y, style, frame, scale = 1) {
+    ctx.fillStyle = '#111';
+    ctx.lineWidth = 2 * scale;
+
+    if (style === 'flat') {
+        if (frame === 0) ctx.fillRect(x - 12 * scale, y, 24 * scale, 4 * scale);
+        if (frame === 1) ctx.fillRect(x - 12 * scale, y, 24 * scale, 6 * scale);
+        if (frame === 2) ctx.fillRect(x - 18 * scale, y, 36 * scale, 10 * scale);
+        if (frame === 3) {
             ctx.beginPath();
-            if (shape === 'circle') { ctx.arc(x + w / 2, y + h / 2, Math.min(w, h) / 2, 0, Math.PI * 2); }
-            else if (shape === 'oval') { ctx.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2); }
-            else { ctx.roundRect(x, y, w, h, 10); }
+            ctx.ellipse(x, y + 5 * scale, 10 * scale, 12 * scale, 0, 0, 6.28);
             ctx.fill();
         }
-        function drawEyes(ctx, x, y, type) {
-            ctx.fillStyle = '#111';
-            if (type === 'dot') { ctx.beginPath(); ctx.arc(x - 18, y, 4, 0, 6.28); ctx.arc(x + 18, y, 4, 0, 6.28); ctx.fill(); }
-            if (type === 'bean') {
-                ctx.fillRect(x - 24, y - 5, 12, 10); ctx.fillRect(x + 12, y - 5, 12, 10);
-            }
-            if (type === 'wide') {
-                ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(x - 18, y, 12, 9, 0, 0, 6.28); ctx.ellipse(x + 18, y, 12, 9, 0, 0, 6.28); ctx.fill();
-                ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(x - 18, y, 4, 0, 6.28); ctx.arc(x + 18, y, 4, 0, 6.28); ctx.fill();
-            }
-        }
-        function drawMouth(ctx, x, y, style, frame) {
-            // frames: 0=closed, 1=small, 2=wide, 3=O
-            ctx.fillStyle = '#111';
-            if (style === 'flat') {
-                if (frame === 0) { ctx.fillRect(x - 12, y, 24, 4); }
-                if (frame === 1) { ctx.fillRect(x - 12, y, 24, 6); }
-                if (frame === 2) { ctx.fillRect(x - 18, y, 36, 10); }
-                if (frame === 3) { ctx.beginPath(); ctx.ellipse(x, y + 5, 10, 12, 0, 0, 6.28); ctx.fill(); }
-            }
-            if (style === 'smile') {
-                ctx.beginPath();
-                if (frame === 0) { ctx.arc(x, y, 12, 0, Math.PI, false); ctx.lineWidth = 3; ctx.strokeStyle = '#111'; ctx.stroke(); }
-                if (frame === 1) { ctx.arc(x, y, 13, 0, Math.PI, false); ctx.lineWidth = 5; ctx.strokeStyle = '#111'; ctx.stroke(); }
-                if (frame === 2) { ctx.arc(x, y, 14, 0, Math.PI, false); ctx.lineWidth = 7; ctx.strokeStyle = '#111'; ctx.stroke(); }
-                if (frame === 3) { ctx.beginPath(); ctx.ellipse(x, y + 5, 10, 12, 0, 0, 6.28); ctx.fill(); }
-            }
-            if (style === 'tooth') {
-                if (frame === 0) { ctx.fillRect(x - 10, y, 20, 6); }
-                if (frame === 1) { ctx.fillStyle = '#c22'; ctx.fillRect(x - 12, y, 24, 8); ctx.fillStyle = '#fff'; for (let i = -10; i <= 10; i += 5) ctx.fillRect(x + i, y, 2, 4); }
-                if (frame === 2) { ctx.fillStyle = '#c22'; ctx.fillRect(x - 16, y, 32, 12); ctx.fillStyle = '#fff'; for (let i = -14; i <= 14; i += 5) ctx.fillRect(x + i, y, 2, 6); }
-                if (frame === 3) { ctx.fillStyle = '#c22'; ctx.beginPath(); ctx.ellipse(x, y + 6, 12, 14, 0, 0, 6.28); ctx.fill(); ctx.fillStyle = '#fff'; ctx.fillRect(x - 10, y, 20, 5); }
-            }
-        }
-        function drawCharacterSheet() {
-            const ctx = c.ctx, W = c.cvs.width, H = c.cvs.height;
-            ctx.clearRect(0, 0, W, H);
-            // 4 mouth frames (top), body full (bottom)
-            // Body
-            const centerX = W / 2, centerY = H * 0.68;
-            // Torso
-            ctx.fillStyle = c.shirt.value; ctx.fillRect(centerX - 55, centerY - 10, 110, 110);
-            // Head
-            drawHead(ctx, centerX - 60, centerY - 160, 120, 120, c.head.value, c.skin.value);
-            // Eyes / mouth (default closed)
-            drawEyes(ctx, centerX, centerY - 112, c.eyes.value);
-            drawMouth(ctx, centerX, centerY - 86, c.mouth.value, 0);
+    }
 
-            // Mouth row frames
-            for (let f = 0; f < 4; f++) {
-                const x = 64 + f * 96, y = 70;
-                // Small head patch to demo mouth frames
-                drawHead(ctx, x - 26, y - 26, 52, 52, 'circle', c.skin.value);
-                drawEyes(ctx, x, y - 6, 'dot');
-                drawMouth(ctx, x, y + 2, c.mouth.value, f);
-                ctx.strokeStyle = '#22324a'; ctx.strokeRect(x - 40, y - 40, 80, 80);
-            }
+    if (style === 'smile') {
+        ctx.beginPath();
+        if (frame === 0) {
+            ctx.arc(x, y, 12 * scale, 0, Math.PI, false);
+            ctx.lineWidth = 3 * scale;
+            ctx.strokeStyle = '#111';
+            ctx.stroke();
         }
-        document.getElementById('c_make').onclick = drawCharacterSheet;
+        if (frame === 1) {
+            ctx.arc(x, y, 13 * scale, 0, Math.PI, false);
+            ctx.lineWidth = 5 * scale;
+            ctx.stroke();
+        }
+        if (frame === 2) {
+            ctx.arc(x, y, 14 * scale, 0, Math.PI, false);
+            ctx.lineWidth = 7 * scale;
+            ctx.stroke();
+        }
+        if (frame === 3) {
+            ctx.beginPath();
+            ctx.ellipse(x, y + 5 * scale, 10 * scale, 12 * scale, 0, 0, 6.28);
+            ctx.fill();
+        }
+    }
 
-        document.getElementById('c_save').onclick = () => {
-            const name = (c.name.value || 'Character') + ' #' + Math.floor(Math.random() * 1000);
-            lib.chars.push({ name, pngDataURL: c.cvs.toDataURL('image/png') });
-            saveLib(); alert('Saved ' + name + ' to library.');
-        };
-        document.getElementById('c_png').onclick = () => {
-            const a = document.createElement('a'); a.href = c.cvs.toDataURL('image/png'); a.download = (c.name.value || 'character') + '_sheet.png'; a.click();
-        };
+    if (style === 'tooth') {
+        if (frame === 0) ctx.fillRect(x - 10 * scale, y, 20 * scale, 6 * scale);
+        if (frame === 1) {
+            ctx.fillStyle = '#c22';
+            ctx.fillRect(x - 12 * scale, y, 24 * scale, 8 * scale);
+            ctx.fillStyle = '#fff';
+            for (let i = -10; i <= 10; i += 5)
+                ctx.fillRect(x + i * scale, y, 2 * scale, 4 * scale);
+        }
+        if (frame === 2) {
+            ctx.fillStyle = '#c22';
+            ctx.fillRect(x - 16 * scale, y, 32 * scale, 12 * scale);
+            ctx.fillStyle = '#fff';
+            for (let i = -14; i <= 14; i += 5)
+                ctx.fillRect(x + i * scale, y, 2 * scale, 6 * scale);
+        }
+        if (frame === 3) {
+            ctx.fillStyle = '#c22';
+            ctx.beginPath();
+            ctx.ellipse(x, y + 6 * scale, 12 * scale, 14 * scale, 0, 0, 6.28);
+            ctx.fill();
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(x - 10 * scale, y, 20 * scale, 5 * scale);
+        }
+    }
+}
+
+function drawCharacterSheet() {
+    const ctx = c.ctx,
+        W = c.cvs.width,
+        H = c.cvs.height;
+    ctx.clearRect(0, 0, W, H);
+
+    const faceScale = parseFloat(c.faceSize.value || 1); // ✅ get scale
+    const centerX = W / 2,
+        centerY = H * 0.68;
+
+    // Torso
+    ctx.fillStyle = c.shirt.value;
+    ctx.fillRect(centerX - 55, centerY - 10, 110, 110);
+
+    // Head
+    const headSize = 120 * faceScale;
+    drawHead(ctx, centerX - headSize / 2, centerY - 160 * faceScale, headSize, headSize, c.head.value, c.skin.value);
+
+    // Eyes & mouth (default closed)
+    drawEyes(ctx, centerX, centerY - 112 * faceScale, c.eyes.value, faceScale);
+    drawMouth(ctx, centerX, centerY - 86 * faceScale, c.mouth.value, 0, faceScale);
+
+    // Mouth row frames
+    for (let f = 0; f < 4; f++) {
+        const x = 64 + f * 96,
+            y = 70;
+        drawHead(ctx, x - 26 * faceScale, y - 26 * faceScale, 52 * faceScale, 52 * faceScale, 'circle', c.skin.value);
+        drawEyes(ctx, x, y - 6 * faceScale, 'dot', faceScale);
+        drawMouth(ctx, x, y + 2 * faceScale, c.mouth.value, f, faceScale);
+        ctx.strokeStyle = '#22324a';
+        ctx.strokeRect(x - 40, y - 40, 80, 80);
+    }
+}
+
+document.getElementById('c_make').onclick = drawCharacterSheet;
+
+// ✅ Optional: live preview while moving slider
+c.faceSize.addEventListener('input', drawCharacterSheet);
+
+document.getElementById('c_save').onclick = () => {
+    const name = (c.name.value || 'Character') + ' #' + Math.floor(Math.random() * 1000);
+    lib.chars.push({ name, pngDataURL: c.cvs.toDataURL('image/png') });
+    saveLib();
+    alert('Saved ' + name + ' to library.');
+};
+
+document.getElementById('c_png').onclick = () => {
+    const a = document.createElement('a');
+    a.href = c.cvs.toDataURL('image/png');
+    a.download = (c.name.value || 'character') + '_sheet.png';
+    a.click();
+};
 
         /* =========================================================
            Background generator
