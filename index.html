@@ -228,6 +228,24 @@
                     <option value="interior">Interior</option>
                     <option value="night">Night Street</option>
                 </select>
+                <label>Image Background</label>
+                <select id="b_image">
+                    <option value="">None</option>
+                    <option value="Images/1.png">Image 1</option>
+                    <option value="Images/2.png">Image 2</option>
+                    <option value="Images/3.png">Image 3</option>
+                    <option value="Images/4.png">Image 4</option>
+                    <option value="Images/5.png">Image 5</option>
+                    <option value="Images/6.png">Image 6</option>
+                    <option value="Images/7.png">Image 7</option>
+                    <option value="Images/8.png">Image 8</option>
+                    <option value="Images/9.png">Image 9</option>
+                    <option value="Images/10.png">Image 10</option>
+                    <option value="Images/11.png">Image 11</option>
+                    <option value="Images/12.png">Image 12</option>
+                    <option value="Images/13.png">Image 12</option>
+                </select>
+
                 <label>Primary Color</label><input id="b_c1" type="color" value="#6ec3ff">
                 <label>Secondary Color</label><input id="b_c2" type="color" value="#193047">
                 <button id="b_make" class="primary" style="margin-top:8px">Generate Background</button>
@@ -340,192 +358,192 @@
         /* =========================================================
    Character generator
 ========================================================= */
-const c = {
-    cvs: document.getElementById('charCanvas'),
-    ctx: document.getElementById('charCanvas').getContext('2d'),
-    name: document.getElementById('c_name'),
-    head: document.getElementById('c_head'),
-    skin: document.getElementById('c_skin'),
-    shirt: document.getElementById('c_shirt'),
-    mouth: document.getElementById('c_mouth'),
-    eyes: document.getElementById('c_eyes'),
-    faceSize: document.getElementById('c_faceSize') // ✅ new slider reference
-};
+        const c = {
+            cvs: document.getElementById('charCanvas'),
+            ctx: document.getElementById('charCanvas').getContext('2d'),
+            name: document.getElementById('c_name'),
+            head: document.getElementById('c_head'),
+            skin: document.getElementById('c_skin'),
+            shirt: document.getElementById('c_shirt'),
+            mouth: document.getElementById('c_mouth'),
+            eyes: document.getElementById('c_eyes'),
+            faceSize: document.getElementById('c_faceSize') // ✅ new slider reference
+        };
 
-function drawHead(ctx, x, y, w, h, shape, color) {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    if (shape === 'circle') {
-        ctx.arc(x + w / 2, y + h / 2, Math.min(w, h) / 2, 0, Math.PI * 2);
-    } else if (shape === 'oval') {
-        ctx.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2);
-    } else {
-        ctx.roundRect(x, y, w, h, 10);
-    }
-    ctx.fill();
-}
-
-function drawEyes(ctx, x, y, type, scale = 1) {
-    ctx.fillStyle = '#111';
-    if (type === 'dot') {
-        ctx.beginPath();
-        ctx.arc(x - 18 * scale, y, 4 * scale, 0, 6.28);
-        ctx.arc(x + 18 * scale, y, 4 * scale, 0, 6.28);
-        ctx.fill();
-    }
-    if (type === 'bean') {
-        ctx.fillRect(x - 24 * scale, y - 5 * scale, 12 * scale, 10 * scale);
-        ctx.fillRect(x + 12 * scale, y - 5 * scale, 12 * scale, 10 * scale);
-    }
-    if (type === 'wide') {
-        ctx.fillStyle = '#fff';
-        ctx.beginPath();
-        ctx.ellipse(x - 18 * scale, y, 12 * scale, 9 * scale, 0, 0, 6.28);
-        ctx.ellipse(x + 18 * scale, y, 12 * scale, 9 * scale, 0, 0, 6.28);
-        ctx.fill();
-        ctx.fillStyle = '#111';
-        ctx.beginPath();
-        ctx.arc(x - 18 * scale, y, 4 * scale, 0, 6.28);
-        ctx.arc(x + 18 * scale, y, 4 * scale, 0, 6.28);
-        ctx.fill();
-    }
-}
-
-function drawMouth(ctx, x, y, style, frame, scale = 1) {
-    ctx.fillStyle = '#111';
-    ctx.lineWidth = 2 * scale;
-
-    if (style === 'flat') {
-        if (frame === 0) ctx.fillRect(x - 12 * scale, y, 24 * scale, 4 * scale);
-        if (frame === 1) ctx.fillRect(x - 12 * scale, y, 24 * scale, 6 * scale);
-        if (frame === 2) ctx.fillRect(x - 18 * scale, y, 36 * scale, 10 * scale);
-        if (frame === 3) {
+        function drawHead(ctx, x, y, w, h, shape, color) {
+            ctx.fillStyle = color;
             ctx.beginPath();
-            ctx.ellipse(x, y + 5 * scale, 10 * scale, 12 * scale, 0, 0, 6.28);
+            if (shape === 'circle') {
+                ctx.arc(x + w / 2, y + h / 2, Math.min(w, h) / 2, 0, Math.PI * 2);
+            } else if (shape === 'oval') {
+                ctx.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2);
+            } else {
+                ctx.roundRect(x, y, w, h, 10);
+            }
             ctx.fill();
         }
-    }
 
-    if (style === 'smile') {
-        ctx.beginPath();
-        if (frame === 0) {
-            ctx.arc(x, y, 12 * scale, 0, Math.PI, false);
-            ctx.lineWidth = 3 * scale;
-            ctx.strokeStyle = '#111';
-            ctx.stroke();
+        function drawEyes(ctx, x, y, type, scale = 1) {
+            ctx.fillStyle = '#111';
+            if (type === 'dot') {
+                ctx.beginPath();
+                ctx.arc(x - 18 * scale, y, 4 * scale, 0, 6.28);
+                ctx.arc(x + 18 * scale, y, 4 * scale, 0, 6.28);
+                ctx.fill();
+            }
+            if (type === 'bean') {
+                ctx.fillRect(x - 24 * scale, y - 5 * scale, 12 * scale, 10 * scale);
+                ctx.fillRect(x + 12 * scale, y - 5 * scale, 12 * scale, 10 * scale);
+            }
+            if (type === 'wide') {
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.ellipse(x - 18 * scale, y, 12 * scale, 9 * scale, 0, 0, 6.28);
+                ctx.ellipse(x + 18 * scale, y, 12 * scale, 9 * scale, 0, 0, 6.28);
+                ctx.fill();
+                ctx.fillStyle = '#111';
+                ctx.beginPath();
+                ctx.arc(x - 18 * scale, y, 4 * scale, 0, 6.28);
+                ctx.arc(x + 18 * scale, y, 4 * scale, 0, 6.28);
+                ctx.fill();
+            }
         }
-        if (frame === 1) {
-            ctx.arc(x, y, 13 * scale, 0, Math.PI, false);
-            ctx.lineWidth = 5 * scale;
-            ctx.stroke();
+
+        function drawMouth(ctx, x, y, style, frame, scale = 1) {
+            ctx.fillStyle = '#111';
+            ctx.lineWidth = 2 * scale;
+
+            if (style === 'flat') {
+                if (frame === 0) ctx.fillRect(x - 12 * scale, y, 24 * scale, 4 * scale);
+                if (frame === 1) ctx.fillRect(x - 12 * scale, y, 24 * scale, 6 * scale);
+                if (frame === 2) ctx.fillRect(x - 18 * scale, y, 36 * scale, 10 * scale);
+                if (frame === 3) {
+                    ctx.beginPath();
+                    ctx.ellipse(x, y + 5 * scale, 10 * scale, 12 * scale, 0, 0, 6.28);
+                    ctx.fill();
+                }
+            }
+
+            if (style === 'smile') {
+                ctx.beginPath();
+                if (frame === 0) {
+                    ctx.arc(x, y, 12 * scale, 0, Math.PI, false);
+                    ctx.lineWidth = 3 * scale;
+                    ctx.strokeStyle = '#111';
+                    ctx.stroke();
+                }
+                if (frame === 1) {
+                    ctx.arc(x, y, 13 * scale, 0, Math.PI, false);
+                    ctx.lineWidth = 5 * scale;
+                    ctx.stroke();
+                }
+                if (frame === 2) {
+                    ctx.arc(x, y, 14 * scale, 0, Math.PI, false);
+                    ctx.lineWidth = 7 * scale;
+                    ctx.stroke();
+                }
+                if (frame === 3) {
+                    ctx.beginPath();
+                    ctx.ellipse(x, y + 5 * scale, 10 * scale, 12 * scale, 0, 0, 6.28);
+                    ctx.fill();
+                }
+            }
+
+            if (style === 'tooth') {
+                if (frame === 0) ctx.fillRect(x - 10 * scale, y, 20 * scale, 6 * scale);
+                if (frame === 1) {
+                    ctx.fillStyle = '#c22';
+                    ctx.fillRect(x - 12 * scale, y, 24 * scale, 8 * scale);
+                    ctx.fillStyle = '#fff';
+                    for (let i = -10; i <= 10; i += 5)
+                        ctx.fillRect(x + i * scale, y, 2 * scale, 4 * scale);
+                }
+                if (frame === 2) {
+                    ctx.fillStyle = '#c22';
+                    ctx.fillRect(x - 16 * scale, y, 32 * scale, 12 * scale);
+                    ctx.fillStyle = '#fff';
+                    for (let i = -14; i <= 14; i += 5)
+                        ctx.fillRect(x + i * scale, y, 2 * scale, 6 * scale);
+                }
+                if (frame === 3) {
+                    ctx.fillStyle = '#c22';
+                    ctx.beginPath();
+                    ctx.ellipse(x, y + 6 * scale, 12 * scale, 14 * scale, 0, 0, 6.28);
+                    ctx.fill();
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(x - 10 * scale, y, 20 * scale, 5 * scale);
+                }
+            }
         }
-        if (frame === 2) {
-            ctx.arc(x, y, 14 * scale, 0, Math.PI, false);
-            ctx.lineWidth = 7 * scale;
-            ctx.stroke();
+
+        function drawCharacterSheet() {
+            const ctx = c.ctx,
+                W = c.cvs.width,
+                H = c.cvs.height;
+            ctx.clearRect(0, 0, W, H);
+
+            const scale = parseFloat(c.faceSize.value || 1); // ✅ use for full-body scale
+            const centerX = W / 2;
+            const baseCenterY = H * 0.68;
+
+            // Adjust vertical position slightly when scaling up or down
+            const centerY = baseCenterY + (1 - scale) * 100;
+
+            // 🧍‍♂️ Body (Torso)
+            ctx.fillStyle = c.shirt.value;
+            const torsoW = 110 * scale;
+            const torsoH = 110 * scale;
+            ctx.fillRect(centerX - torsoW / 2, centerY - 10 * scale, torsoW, torsoH);
+
+            // 🟤 Head
+            const headSize = 120 * scale;
+            drawHead(
+                ctx,
+                centerX - headSize / 2,
+                centerY - 160 * scale,
+                headSize,
+                headSize,
+                c.head.value,
+                c.skin.value
+            );
+
+            // Eyes + Mouth (scaled with body)
+            drawEyes(ctx, centerX, centerY - 112 * scale, c.eyes.value, scale);
+            drawMouth(ctx, centerX, centerY - 86 * scale, c.mouth.value, 0, scale);
+
+            // Mouth row frames (top small preview)
+            for (let f = 0; f < 4; f++) {
+                const x = 64 + f * 96,
+                    y = 70;
+                const headW = 52 * scale,
+                    headH = 52 * scale;
+                drawHead(ctx, x - headW / 2, y - headH / 2, headW, headH, 'circle', c.skin.value);
+                drawEyes(ctx, x, y - 6 * scale, 'dot', scale);
+                drawMouth(ctx, x, y + 2 * scale, c.mouth.value, f, scale);
+                ctx.strokeStyle = '#22324a';
+                ctx.strokeRect(x - 40, y - 40, 80, 80);
+            }
         }
-        if (frame === 3) {
-            ctx.beginPath();
-            ctx.ellipse(x, y + 5 * scale, 10 * scale, 12 * scale, 0, 0, 6.28);
-            ctx.fill();
-        }
-    }
-
-    if (style === 'tooth') {
-        if (frame === 0) ctx.fillRect(x - 10 * scale, y, 20 * scale, 6 * scale);
-        if (frame === 1) {
-            ctx.fillStyle = '#c22';
-            ctx.fillRect(x - 12 * scale, y, 24 * scale, 8 * scale);
-            ctx.fillStyle = '#fff';
-            for (let i = -10; i <= 10; i += 5)
-                ctx.fillRect(x + i * scale, y, 2 * scale, 4 * scale);
-        }
-        if (frame === 2) {
-            ctx.fillStyle = '#c22';
-            ctx.fillRect(x - 16 * scale, y, 32 * scale, 12 * scale);
-            ctx.fillStyle = '#fff';
-            for (let i = -14; i <= 14; i += 5)
-                ctx.fillRect(x + i * scale, y, 2 * scale, 6 * scale);
-        }
-        if (frame === 3) {
-            ctx.fillStyle = '#c22';
-            ctx.beginPath();
-            ctx.ellipse(x, y + 6 * scale, 12 * scale, 14 * scale, 0, 0, 6.28);
-            ctx.fill();
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(x - 10 * scale, y, 20 * scale, 5 * scale);
-        }
-    }
-}
-
-function drawCharacterSheet() {
-    const ctx = c.ctx,
-        W = c.cvs.width,
-        H = c.cvs.height;
-    ctx.clearRect(0, 0, W, H);
-
-    const scale = parseFloat(c.faceSize.value || 1); // ✅ use for full-body scale
-    const centerX = W / 2;
-    const baseCenterY = H * 0.68;
-
-    // Adjust vertical position slightly when scaling up or down
-    const centerY = baseCenterY + (1 - scale) * 100;
-
-    // 🧍‍♂️ Body (Torso)
-    ctx.fillStyle = c.shirt.value;
-    const torsoW = 110 * scale;
-    const torsoH = 110 * scale;
-    ctx.fillRect(centerX - torsoW / 2, centerY - 10 * scale, torsoW, torsoH);
-
-    // 🟤 Head
-    const headSize = 120 * scale;
-    drawHead(
-        ctx,
-        centerX - headSize / 2,
-        centerY - 160 * scale,
-        headSize,
-        headSize,
-        c.head.value,
-        c.skin.value
-    );
-
-    // Eyes + Mouth (scaled with body)
-    drawEyes(ctx, centerX, centerY - 112 * scale, c.eyes.value, scale);
-    drawMouth(ctx, centerX, centerY - 86 * scale, c.mouth.value, 0, scale);
-
-    // Mouth row frames (top small preview)
-    for (let f = 0; f < 4; f++) {
-        const x = 64 + f * 96,
-            y = 70;
-        const headW = 52 * scale,
-            headH = 52 * scale;
-        drawHead(ctx, x - headW / 2, y - headH / 2, headW, headH, 'circle', c.skin.value);
-        drawEyes(ctx, x, y - 6 * scale, 'dot', scale);
-        drawMouth(ctx, x, y + 2 * scale, c.mouth.value, f, scale);
-        ctx.strokeStyle = '#22324a';
-        ctx.strokeRect(x - 40, y - 40, 80, 80);
-    }
-}
 
 
-document.getElementById('c_make').onclick = drawCharacterSheet;
+        document.getElementById('c_make').onclick = drawCharacterSheet;
 
-// ✅ Optional: live preview while moving slider
-c.faceSize.addEventListener('input', drawCharacterSheet);
+        // ✅ Optional: live preview while moving slider
+        c.faceSize.addEventListener('input', drawCharacterSheet);
 
-document.getElementById('c_save').onclick = () => {
-    const name = (c.name.value || 'Character') + ' #' + Math.floor(Math.random() * 1000);
-    lib.chars.push({ name, pngDataURL: c.cvs.toDataURL('image/png') });
-    saveLib();
-    alert('Saved ' + name + ' to library.');
-};
+        document.getElementById('c_save').onclick = () => {
+            const name = (c.name.value || 'Character') + ' #' + Math.floor(Math.random() * 1000);
+            lib.chars.push({ name, pngDataURL: c.cvs.toDataURL('image/png') });
+            saveLib();
+            alert('Saved ' + name + ' to library.');
+        };
 
-document.getElementById('c_png').onclick = () => {
-    const a = document.createElement('a');
-    a.href = c.cvs.toDataURL('image/png');
-    a.download = (c.name.value || 'character') + '_sheet.png';
-    a.click();
-};
+        document.getElementById('c_png').onclick = () => {
+            const a = document.createElement('a');
+            a.href = c.cvs.toDataURL('image/png');
+            a.download = (c.name.value || 'character') + '_sheet.png';
+            a.click();
+        };
 
         /* =========================================================
            Background generator
@@ -535,36 +553,72 @@ document.getElementById('c_png').onclick = () => {
             ctx: document.getElementById('bgCanvas').getContext('2d'),
             preset: document.getElementById('b_preset'),
             c1: document.getElementById('b_c1'),
-            c2: document.getElementById('b_c2')
+            c2: document.getElementById('b_c2'),
+            image: document.getElementById('b_image') // 🆕 added
         };
         function drawBG() {
             const { ctx } = bg, W = bg.cvs.width, H = bg.cvs.height;
             ctx.clearRect(0, 0, W, H);
+
+            const selectedImage = bg.image.value;
+
+            if (selectedImage) {
+                // 🖼️ If an image is selected, load and draw it
+                const img = new Image();
+                img.onload = () => ctx.drawImage(img, 0, 0, W, H);
+                img.src = selectedImage;
+                return; // stop here so manual generation isn’t triggered
+            }
+
+            // 🎨 Otherwise, fall back to procedural background generation
             if (bg.preset.value === 'gradient') {
                 const g = ctx.createLinearGradient(0, 0, 0, H);
-                g.addColorStop(0, bg.c1.value); g.addColorStop(1, bg.c2.value);
-                ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+                g.addColorStop(0, bg.c1.value);
+                g.addColorStop(1, bg.c2.value);
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, W, H);
             }
-            if (bg.preset.value === 'hills') {
+            else if (bg.preset.value === 'hills') {
                 const g = ctx.createLinearGradient(0, 0, 0, H);
-                g.addColorStop(0, bg.c1.value); g.addColorStop(1, bg.c2.value);
-                ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-                // hills
-                ctx.fillStyle = '#28425f'; for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.ellipse(150 + i * 300, H - 60 - i * 20, 260, 100 + i * 20, 0, 0, 6.28); ctx.fill(); }
+                g.addColorStop(0, bg.c1.value);
+                g.addColorStop(1, bg.c2.value);
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, W, H);
+                ctx.fillStyle = '#28425f';
+                for (let i = 0; i < 4; i++) {
+                    ctx.beginPath();
+                    ctx.ellipse(150 + i * 300, H - 60 - i * 20, 260, 100 + i * 20, 0, 0, 6.28);
+                    ctx.fill();
+                }
             }
-            if (bg.preset.value === 'interior') {
-                ctx.fillStyle = bg.c2.value; ctx.fillRect(0, 0, W, H);
-                ctx.fillStyle = bg.c1.value; ctx.fillRect(120, 60, W - 240, H - 120);
-                ctx.strokeStyle = '#22324a'; ctx.lineWidth = 6; ctx.strokeRect(120, 60, W - 240, H - 120);
+            else if (bg.preset.value === 'interior') {
+                ctx.fillStyle = bg.c2.value;
+                ctx.fillRect(0, 0, W, H);
+                ctx.fillStyle = bg.c1.value;
+                ctx.fillRect(120, 60, W - 240, H - 120);
+                ctx.strokeStyle = '#22324a';
+                ctx.lineWidth = 6;
+                ctx.strokeRect(120, 60, W - 240, H - 120);
             }
-            if (bg.preset.value === 'night') {
+            else if (bg.preset.value === 'night') {
                 const g = ctx.createLinearGradient(0, 0, 0, H);
-                g.addColorStop(0, '#0a0e18'); g.addColorStop(1, '#081020');
-                ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-                ctx.fillStyle = '#23334f'; for (let x = 80; x < W; x += 180) { ctx.fillRect(x, H - 140, 120, 140); }
-                ctx.fillStyle = '#d8b85c'; for (let x = 92; x < W; x += 180) { for (let y = H - 130; y < H - 20; y += 22) { if (Math.random() < 0.3) ctx.fillRect(x, y, 8, 12); } }
+                g.addColorStop(0, '#0a0e18');
+                g.addColorStop(1, '#081020');
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, W, H);
+                ctx.fillStyle = '#23334f';
+                for (let x = 80; x < W; x += 180) {
+                    ctx.fillRect(x, H - 140, 120, 140);
+                }
+                ctx.fillStyle = '#d8b85c';
+                for (let x = 92; x < W; x += 180) {
+                    for (let y = H - 130; y < H - 20; y += 22) {
+                        if (Math.random() < 0.3) ctx.fillRect(x, y, 8, 12);
+                    }
+                }
             }
         }
+
         document.getElementById('b_make').onclick = drawBG;
         document.getElementById('b_save').onclick = () => {
             const name = bg.preset.value + '_' + Math.floor(Math.random() * 1000);
